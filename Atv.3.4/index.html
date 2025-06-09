@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Busca Semântica</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        input { padding: 10px; width: 300px; }
+        button { padding: 10px 20px; }
+        #resultados { margin-top: 20px; }
+        .resultado { border-bottom: 1px solid #ccc; padding: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>Busca Semântica</h1>
+    <input type="text" id="query" placeholder="Ex.: preciso instalar o windows">
+    <button onclick="buscar()">Buscar</button>
+    <div id="resultados"></div>
+    <script>
+        async function buscar() {
+            const query = document.getElementById('query').value;
+            if (!query) return;
+            const response = await fetch(`http://localhost:8000/search?q=${encodeURIComponent(query)}`);
+            const resultados = await response.json();
+            const resultadosDiv = document.getElementById('resultados');
+            resultadosDiv.innerHTML = resultados.map(r => `
+                <div class="resultado">
+                    <b>${r.titulo}</b> (Similaridade: ${r.similaridade.toFixed(2)})<br>
+                    ${r.descricao}
+                </div>
+            `).join('');
+        }
+    </script>
+</body>
+</html>
