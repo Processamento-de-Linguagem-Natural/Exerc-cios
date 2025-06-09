@@ -5,22 +5,33 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 app = Flask(__name__)
 
-# Base de conhecimento
-faq = {
-    "como instalo um programa": "Para instalar um programa, você pode utilizar o gerenciador de pacotes do seu sistema. Por exemplo: sudo apt install nome-do-programa",
-    "como remover um programa": "Você pode remover programas com: sudo apt remove nome-do-programa",
-    "como atualizo o sistema": "Use: sudo apt update && sudo apt upgrade",
-    "como vejo programas instalados": "Você pode usar: dpkg --list ou flatpak list",
-    "o que você pode fazer": "Posso responder perguntas técnicas relacionadas a gerenciamento de pacotes e operações básicas no sistema.",
-}
+
+# Carrega perguntas e respostas do arquivo
+def load_faq(filepath="faq.txt"):
+    with open(filepath, encoding="utf-8") as f:
+        lines = f.read().splitlines()
+
+    questions, answers = [], []
+    q, a = None, None
+    for line in lines:
+        if line.startswith("PERGUNTA:"):
+            q = line.replace("PERGUNTA:", "").strip()
+        elif line.startswith("RESPOSTA:"):
+            a = line.replace("RESPOSTA:", "").strip()
+        if q and a:
+            questions.append(q)
+            answers.append(a)
+            q, a = None, None
+    return questions, answers
+
 
 # Preprocessamento
-questions = list(faq.keys())
-answers = list(faq.values())
+questions, answers = load_faq("faq.txt")
 vectorizer = CountVectorizer().fit(questions)
 X = vectorizer.transform(questions)
 
 
+# limpeza básica do texto
 def clean(text):
     return re.sub(r"[^a-zA-Zà-ü0-9\s]", "", text.lower())
 

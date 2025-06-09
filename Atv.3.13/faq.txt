@@ -1,0 +1,35 @@
+PERGUNTA: como instalo um programa
+RESPOSTA: Para instalar um programa, você pode utilizar o gerenciador de pacotes do seu sistema. Por exemplo: sudo apt install nome-do-programa
+
+PERGUNTA: como remover um programa
+RESPOSTA: Você pode remover programas com: sudo apt remove nome-do-programa
+
+PERGUNTA: como atualizo o sistema
+RESPOSTA: Use: sudo apt update && sudo apt upgrade
+
+PERGUNTA: como vejo programas instalados
+RESPOSTA: Você pode usar: dpkg --list ou flatpak list
+
+PERGUNTA: o que você pode fazer
+RESPOSTA: Posso responder perguntas técnicas relacionadas a gerenciamento de pacotes e operações básicas no sistema.
+
+PERGUNTA: como limpo o cache do sistema
+RESPOSTA: Para limpar o cache de pacotes use: sudo apt clean ou sudo apt autoremove
+
+PERGUNTA: como vejo o espaço em disco
+RESPOSTA: Use o comando: df -h
+
+PERGUNTA: como descubro o IP da minha máquina
+RESPOSTA: Execute: ip a ou hostname -I
+
+PERGUNTA: como reinicio meu computador via terminal
+RESPOSTA: Utilize: sudo reboot
+
+PERGUNTA: como desligo meu computador pelo terminal
+RESPOSTA: Use: sudo poweroff
+
+PERGUNTA: como atualizo meus snaps
+RESPOSTA: Execute: sudo snap refresh
+
+PERGUNTA: como vejo os serviços ativos
+RESPOSTA: Comando útil: systemctl list-units --type=service
