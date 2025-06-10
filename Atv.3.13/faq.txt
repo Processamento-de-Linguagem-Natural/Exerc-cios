@@ -1,35 +1,35 @@
-PERGUNTA: como instalo um programa
-RESPOSTA: Para instalar um programa, você pode utilizar o gerenciador de pacotes do seu sistema. Por exemplo: sudo apt install nome-do-programa
+PERGUNTA: como posso instalar um programa, sistema ou software novo?
+RESPOSTA: Para instalar programas, você pode usar o gerenciador de pacotes do seu sistema. No Ubuntu, por exemplo, use: sudo apt install nome-do-programa.
 
-PERGUNTA: como remover um programa
-RESPOSTA: Você pode remover programas com: sudo apt remove nome-do-programa
+PERGUNTA: como desinstalo ou removo um programa, sistema ou software?
+RESPOSTA: Para remover um programa instalado, use: sudo apt remove nome-do-programa. Isso vai desinstalar o pacote, mas manterá as configurações do usuário.
 
-PERGUNTA: como atualizo o sistema
-RESPOSTA: Use: sudo apt update && sudo apt upgrade
+PERGUNTA: como faço para atualizar meu sistema ou programas?
+RESPOSTA: Para manter o sistema atualizado, utilize: sudo apt update && sudo apt upgrade. Isso verifica e instala as atualizações disponíveis.
 
-PERGUNTA: como vejo programas instalados
-RESPOSTA: Você pode usar: dpkg --list ou flatpak list
+PERGUNTA: como vejo os programas que estão instalados no sistema?
+RESPOSTA: Você pode listar os programas com: dpkg --list (para pacotes .deb) ou flatpak list (para pacotes Flatpak).
 
-PERGUNTA: o que você pode fazer
-RESPOSTA: Posso responder perguntas técnicas relacionadas a gerenciamento de pacotes e operações básicas no sistema.
+PERGUNTA: o que você pode fazer por mim?
+RESPOSTA: Eu posso te ajudar com comandos básicos no terminal, como instalar, atualizar ou remover programas, verificar informações do sistema, entre outros.
 
-PERGUNTA: como limpo o cache do sistema
-RESPOSTA: Para limpar o cache de pacotes use: sudo apt clean ou sudo apt autoremove
+PERGUNTA: como posso limpar arquivos desnecessários do sistema?
+RESPOSTA: Para liberar espaço, você pode usar: sudo apt clean (limpa o cache de pacotes) ou sudo apt autoremove (remove pacotes não utilizados).
 
-PERGUNTA: como vejo o espaço em disco
-RESPOSTA: Use o comando: df -h
+PERGUNTA: como verifico o espaço livre ou ocupado no disco?
+RESPOSTA: Para ver o uso do disco de forma resumida e legível, use: df -h.
 
-PERGUNTA: como descubro o IP da minha máquina
-RESPOSTA: Execute: ip a ou hostname -I
+PERGUNTA: como descubro o IP da minha máquina no terminal?
+RESPOSTA: Você pode usar: ip a ou hostname -I para ver o endereço IP do seu computador.
 
-PERGUNTA: como reinicio meu computador via terminal
-RESPOSTA: Utilize: sudo reboot
+PERGUNTA: como reinicio o computador pelo terminal?
+RESPOSTA: Para reiniciar o sistema via linha de comando, use: sudo reboot.
 
-PERGUNTA: como desligo meu computador pelo terminal
-RESPOSTA: Use: sudo poweroff
+PERGUNTA: como desligo o computador pelo terminal?
+RESPOSTA: Para desligar o computador pelo terminal, use: sudo poweroff.
 
-PERGUNTA: como atualizo meus snaps
-RESPOSTA: Execute: sudo snap refresh
+PERGUNTA: como atualizo aplicativos instalados pelo snap?
+RESPOSTA: Para atualizar programas instalados via snap, use: sudo snap refresh.
 
-PERGUNTA: como vejo os serviços ativos
-RESPOSTA: Comando útil: systemctl list-units --type=service
+PERGUNTA: como vejo quais serviços estão ativos no sistema?
+RESPOSTA: Você pode listar os serviços ativos com: systemctl list-units --type=service.

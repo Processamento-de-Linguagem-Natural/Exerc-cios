@@ -2,6 +2,14 @@ import re
 from flask import Flask, request, render_template_string
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
+import nltk
+from nltk.corpus import stopwords
+from nltk.stem import SnowballStemmer
+
+nltk.download("stopwords")
+nltk.download("rslp")
+
+stemmer = SnowballStemmer("portuguese")
 
 app = Flask(__name__)
 
@@ -25,151 +33,178 @@ def load_faq(filepath="faq.txt"):
     return questions, answers
 
 
-# Preprocessamento
-questions, answers = load_faq("faq.txt")
-vectorizer = CountVectorizer().fit(questions)
-X = vectorizer.transform(questions)
-
-
 # limpeza básica do texto
 def clean(text):
-    return re.sub(r"[^a-zA-Zà-ü0-9\s]", "", text.lower())
+    # Coloca tudo em minúsculo e remove pontuação
+    text = re.sub(r"[^a-zA-Zà-ü0-9\s]", "", text.lower())
+
+    # Divide em palavras
+    words = text.split()
+
+    # Remove stopwords em português
+    stop_words = set(stopwords.words("portuguese"))
+    stop_words.discard("não")
+    filtered_words = [word for word in words if word not in stop_words]
+
+    # Aplica stemming
+    stemmed_words = [stemmer.stem(word) for word in filtered_words]
+
+    return " ".join(stemmed_words)
+
+
+# Preprocessamento
+questions, answers = load_faq("faq.txt")
+cleaned_questions = [clean(q) for q in questions]
+vectorizer = CountVectorizer().fit(cleaned_questions)
+X = vectorizer.transform(cleaned_questions)
 
 
 HTML_TEMPLATE = """
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChatBot - Ajuda Técnica</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f7fa;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            color: #333;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ChatBot - Suporte Técnico</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
-        .chat-container {
-            background-color: #fff;
-            width: 100%;
-            max-width: 600px;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            margin: 20px;
-        }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #1e1e2f;
+      color: #f0f0f0;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
 
-        h2 {
-            text-align: center;
-            color: #2c3e50;
-            margin-bottom: 20px;
-        }
+    .chat-container {
+      background-color: #2a2a40;
+      width: 100%;
+      max-width: 700px;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+    }
 
-        .chat-form {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
+    h2 {
+      text-align: center;
+      margin-bottom: 24px;
+      color: #00c6ff;
+      font-weight: 500;
+    }
 
-        input[type="text"] {
-            flex: 1;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 16px;
-            outline: none;
-            transition: border-color 0.3s;
-        }
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      background-color: #1e1e2f;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      max-height: 300px;
+      border: 1px solid #3a3a5c;
+    }
 
-        input[type="text"]:focus {
-            border-color: #3498db;
-        }
+    .message {
+      margin: 10px 0;
+      padding: 12px 16px;
+      border-radius: 8px;
+      max-width: 80%;
+      display: inline-block;
+      line-height: 1.4;
+    }
 
-        button {
-            padding: 10px 20px;
-            background-color: #3498db;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
+    .user-message {
+      background-color: #0059ff;
+      color: #fff;
+      margin-left: auto;
+      text-align: right;
+    }
 
-        button:hover {
-            background-color: #2980b9;
-        }
+    .bot-message {
+      background-color: #3a3a5c;
+      color: #f0f0f0;
+      margin-right: auto;
+    }
 
-        .chat-messages {
-            max-height: 300px;
-            overflow-y: auto;
-            padding: 10px;
-            border: 1px solid #eee;
-            border-radius: 5px;
-            background-color: #fafafa;
-            margin-bottom: 20px;
-        }
+    .chat-form {
+      display: flex;
+      gap: 10px;
+    }
 
-        .message {
-            margin: 10px 0;
-            padding: 10px;
-            border-radius: 5px;
-            max-width: 80%;
-        }
+    input[type="text"] {
+      flex: 1;
+      padding: 12px;
+      border-radius: 6px;
+      border: 1px solid #444;
+      background-color: #121224;
+      color: #fff;
+      font-size: 16px;
+    }
 
-        .user-message {
-            background-color: #e1f5fe;
-            margin-left: auto;
-            text-align: right;
-        }
+    input[type="text"]::placeholder {
+      color: #aaa;
+    }
 
-        .bot-message {
-            background-color: #f1f1f1;
-            margin-right: auto;
-        }
+    button {
+      padding: 12px 20px;
+      background: linear-gradient(to right, #00c6ff, #0072ff);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
 
-        @media (max-width: 500px) {
-            .chat-container {
-                margin: 10px;
-                padding: 15px;
-            }
+    button:hover {
+      background: linear-gradient(to right, #00a2e2, #0059ff);
+    }
 
-            .chat-form {
-                flex-direction: column;
-            }
+    @media (max-width: 600px) {
+      .chat-container {
+        padding: 16px;
+        margin: 10px;
+      }
 
-            button {
-                width: 100%;
-            }
-        }
-    </style>
+      .chat-form {
+        flex-direction: column;
+      }
+
+      button {
+        width: 100%;
+      }
+    }
+  </style>
 </head>
 <body>
-    <div class="chat-container">
-        <h2>ChatBot - Ajuda Técnica</h2>
-        <div class="chat-messages">
-            {% if user_input %}
-                <div class="message user-message">
-                    <strong>Você:</strong> {{ user_input }}
-                </div>
-                <div class="message bot-message">
-                    <strong>ChatBot:</strong> {{ response }}
-                </div>
-            {% endif %}
+  <div class="chat-container">
+    <h2>🤖 Suporte Técnico</h2>
+    <div class="chat-messages">
+      {% if user_input %}
+        <div class="message user-message">
+          <strong>Você:</strong> {{ user_input }}
         </div>
-        <form class="chat-form" method="POST">
-            <input type="text" name="user_input" placeholder="Digite sua pergunta aqui..." required autofocus>
-            <button type="submit">Enviar</button>
-        </form>
+        <div class="message bot-message">
+          <strong>ChatBot:</strong> {{ response }}
+        </div>
+      {% endif %}
     </div>
+    <form class="chat-form" method="POST">
+      <input type="text" name="user_input" placeholder="Digite sua dúvida técnica aqui..." required autofocus>
+      <button type="submit">Enviar</button>
+    </form>
+  </div>
 </body>
 </html>
+
 """
 
 
@@ -179,7 +214,7 @@ def chatbot():
     response = ""
     if request.method == "POST":
         user_input = request.form["user_input"]
-        if clean(user_input) in ["sair", "quero sair"]:
+        if clean(user_input) in ["sair", "quero sair", "tchau", "encerrar"]:
             response = "Até mais! Qualquer coisa, estou por aqui."
         else:
             user_vec = vectorizer.transform([clean(user_input)])
